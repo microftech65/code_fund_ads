@@ -2,10 +2,10 @@
 #
 # Table name: audiences
 #
-#  id               :integer          primary key
-#  name             :text
+#  id               :integer
 #  ecpm_column_name :text
 #  keywords         :text             is an Array
+#  name             :text
 #
 
 require "test_helper"
