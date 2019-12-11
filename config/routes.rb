@@ -76,6 +76,8 @@ Rails.application.routes.draw do
   resources :versions, only: [:show, :update]
   resources :comments, only: [:create, :destroy]
 
+  resources :insertion_orders, only: [:new]
+
   resources :campaigns
   scope "/campaigns/:campaign_id" do
     resource :campaign_targeting, only: [:show], path: "/targeting"
