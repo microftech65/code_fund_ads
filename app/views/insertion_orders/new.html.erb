@@ -16,12 +16,12 @@
 
       <div class="form-group">
         <label>Audience</label>
-        <%= select_tag :audience, options_from_collection_for_select(Audience.all, "id", "name", @audience.id), class: "form-control", data: { reflex: "input->NateReflex#change_audience"} %>
+        <%= select_tag :audience, options_from_collection_for_select(Audience.all, "id", "name", @audience.id), class: "form-control", data: {reflex: "input->InsertionOrdersReflex#change_audience"} %>
       </div>
 
       <div class="form-group">
         <label>Region</label>
-        <%= select_tag :audience, options_from_collection_for_select(Region.all, "id", "name", @region.id), class: "form-control", data: { reflex: "input->NateReflex#change_region"} %>
+        <%= select_tag :audience, options_from_collection_for_select(Region.all, "id", "name", @region.id), class: "form-control", data: {reflex: "input->InsertionOrdersReflex#change_region"} %>
       </div>
 
       <div class="form-group">
@@ -30,7 +30,7 @@
             class: "js-range-datepicker form-control bg-white rounded",
             data: {
               controller: "select-date-range",
-              reflex: "input->NateReflex#change_dates",
+              reflex: "input->InsertionOrdersReflex#change_dates",
               start_date: @adate.strftime("%m/%d/%Y"),
               end_date: @bdate.strftime("%m/%d/%Y")
             } %>
@@ -38,7 +38,7 @@
 
       <div class="form-group">
         <label>Budget (USD)</label>
-        <%= number_field_tag :total_budget, @total_budget, required: true, label: "Budget (USD)", class: "form-control", data: { reflex: "input->NateReflex#change_total_budget"} %>
+        <%= number_field_tag :total_budget, @total_budget, required: true, label: "Budget (USD)", class: "form-control", data: {reflex: "input->InsertionOrdersReflex#change_total_budget"} %>
         <small class="text-secondary">Spendable budget: <%= @total_budget.format %></small>
       </div>
 
@@ -55,7 +55,7 @@
              data-start-date="<%= @adate.iso8601 %>"
              data-end-date="<%= @bdate.iso8601 %>"
              data-payload="<%= @audience.stacked_bar_chart_series(@adate, @bdate, region: @region, total_budget: @total_budget).to_json %>"></div>
-        <a class="btn btn-lg btn-primary mt-4 text-white">Create Insertion Order</a>
+        <a class="btn btn-lg btn-primary mt-4 text-white">Next</a>
       </div>
     </div>
   </div>

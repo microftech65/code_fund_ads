@@ -1,4 +1,4 @@
-class InsetionOrdersReflex < ApplicationReflex
+class InsertionOrdersReflex < ApplicationReflex
   def change_audience
     session[:audience_id] = element[:value]
   end
