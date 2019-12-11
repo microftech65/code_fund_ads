@@ -2,7 +2,7 @@
 #
 # Table name: audiences
 #
-#  id               :integer
+#  id               :integer          primary key
 #  ecpm_column_name :text
 #  keywords         :text             is an Array
 #  name             :text
