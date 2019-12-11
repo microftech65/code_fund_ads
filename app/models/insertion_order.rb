@@ -3,6 +3,7 @@
 # Table name: insertion_orders
 #
 #  id                    :bigint           not null, primary key
+#  approved_at           :datetime
 #  billing_address_1     :string           not null
 #  billing_address_2     :string
 #  billing_city          :string           not null
@@ -27,6 +28,7 @@
 #  contact_postal_code   :string           not null
 #  contact_region        :string           not null
 #  end_date              :datetime         not null
+#  paid_at               :datetime
 #  start_date            :datetime         not null
 #  total_budget_cents    :integer          default(0), not null
 #  total_budget_currency :string           default("USD"), not null

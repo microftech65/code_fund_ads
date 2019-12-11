@@ -48,6 +48,17 @@ class Region < ApplicationRecord
 
   # class methods .............................................................
   class << self
+    def united_states_and_canada
+      find 1
+    end
+
+    def europe_australia_and_new_zealand
+      find 2
+    end
+
+    def other
+      find 3
+    end
   end
 
   # public instance methods ...................................................

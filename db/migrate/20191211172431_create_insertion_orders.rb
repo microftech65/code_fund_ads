@@ -7,6 +7,8 @@ class CreateInsertionOrders < ActiveRecord::Migration[6.0]
       t.monetize :total_budget, null: false
       t.datetime :start_date, null: false
       t.datetime :end_date, null: false
+      t.datetime :approved_at
+      t.datetime :paid_at
       t.timestamps
 
       # intentional denormalization of company details

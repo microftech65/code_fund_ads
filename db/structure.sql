@@ -558,6 +558,8 @@ CREATE TABLE public.insertion_orders (
     total_budget_currency character varying DEFAULT 'USD'::character varying NOT NULL,
     start_date timestamp without time zone NOT NULL,
     end_date timestamp without time zone NOT NULL,
+    approved_at timestamp without time zone,
+    paid_at timestamp without time zone,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
     company_name character varying,
@@ -977,7 +979,7 @@ ALTER SEQUENCE public.publisher_invoices_id_seq OWNED BY public.publisher_invoic
 
 CREATE VIEW public.regions AS
  SELECT 1 AS id,
-    'United States and Candada'::text AS name,
+    'United States and Canada'::text AS name,
     'USD'::text AS blockchain_ecpm_currency,
     1000 AS blockchain_ecpm_cents,
     'USD'::text AS css_and_design_ecpm_currency,
@@ -2649,6 +2651,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20191014205953'),
 ('20191105141709'),
 ('20191201235552'),
-('20191211172431');
+('20191211172431'),
+('20191211184412');
 
 
