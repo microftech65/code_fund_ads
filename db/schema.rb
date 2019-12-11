@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_12_01_235552) do
+ActiveRecord::Schema.define(version: 2019_12_11_172431) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -76,6 +76,9 @@ ActiveRecord::Schema.define(version: 2019_12_01_235552) do
     t.bigint "prohibited_property_ids", default: [], null: false, array: true
     t.bigint "creative_ids", default: [], null: false, array: true
     t.boolean "paid_fallback", default: false
+    t.bigint "insertion_order_id"
+    t.integer "audience_id"
+    t.integer "region_id"
     t.index "lower((name)::text)", name: "index_campaigns_on_name"
     t.index ["assigned_property_ids"], name: "index_campaigns_on_assigned_property_ids", using: :gin
     t.index ["core_hours_only"], name: "index_campaigns_on_core_hours_only"
@@ -263,6 +266,40 @@ ActiveRecord::Schema.define(version: 2019_12_01_235552) do
     t.index ["property_id"], name: "impressions_default_property_id_idx"
     t.index ["province_code"], name: "impressions_default_province_code_idx"
     t.index ["uplift"], name: "impressions_default_uplift_idx"
+  end
+
+  create_table "insertion_orders", force: :cascade do |t|
+    t.bigint "organization_id", null: false
+    t.bigint "user_id", null: false
+    t.integer "total_budget_cents", default: 0, null: false
+    t.string "total_budget_currency", default: "USD", null: false
+    t.datetime "start_date", null: false
+    t.datetime "end_date", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.string "company_name"
+    t.string "contact_first_name", null: false
+    t.string "contact_last_name", null: false
+    t.string "contact_email", null: false
+    t.string "contact_phone_1", null: false
+    t.string "contact_phone_2"
+    t.string "contact_address_1", null: false
+    t.string "contact_address_2"
+    t.string "contact_city", null: false
+    t.string "contact_region", null: false
+    t.string "contact_postal_code", null: false
+    t.string "contact_country", null: false
+    t.string "billing_first_name", null: false
+    t.string "billing_last_name", null: false
+    t.string "billing_email", null: false
+    t.string "billing_phone_1", null: false
+    t.string "billing_phone_2"
+    t.string "billing_address_1", null: false
+    t.string "billing_address_2"
+    t.string "billing_city", null: false
+    t.string "billing_region", null: false
+    t.string "billing_postal_code", null: false
+    t.string "billing_country", null: false
   end
 
   create_table "job_postings", force: :cascade do |t|

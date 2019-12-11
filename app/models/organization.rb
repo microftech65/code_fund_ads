@@ -22,6 +22,7 @@ class Organization < ApplicationRecord
   # relationships .............................................................
   has_many :campaigns
   has_many :creatives
+  has_many :insertion_orders
   has_many :impressions
   has_many :job_postings
   has_many :organization_reports

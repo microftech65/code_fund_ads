@@ -219,7 +219,10 @@ CREATE TABLE public.campaigns (
     hourly_budget_currency character varying DEFAULT 'USD'::character varying NOT NULL,
     prohibited_property_ids bigint[] DEFAULT '{}'::bigint[] NOT NULL,
     creative_ids bigint[] DEFAULT '{}'::bigint[] NOT NULL,
-    paid_fallback boolean DEFAULT false
+    paid_fallback boolean DEFAULT false,
+    insertion_order_id bigint,
+    audience_id integer,
+    region_id integer
 );
 
 
@@ -541,6 +544,65 @@ CREATE TABLE public.impressions_default (
     uplift boolean DEFAULT false
 );
 ALTER TABLE ONLY public.impressions ATTACH PARTITION public.impressions_default DEFAULT;
+
+
+--
+-- Name: insertion_orders; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.insertion_orders (
+    id bigint NOT NULL,
+    organization_id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    total_budget_cents integer DEFAULT 0 NOT NULL,
+    total_budget_currency character varying DEFAULT 'USD'::character varying NOT NULL,
+    start_date timestamp without time zone NOT NULL,
+    end_date timestamp without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    company_name character varying,
+    contact_first_name character varying NOT NULL,
+    contact_last_name character varying NOT NULL,
+    contact_email character varying NOT NULL,
+    contact_phone_1 character varying NOT NULL,
+    contact_phone_2 character varying,
+    contact_address_1 character varying NOT NULL,
+    contact_address_2 character varying,
+    contact_city character varying NOT NULL,
+    contact_region character varying NOT NULL,
+    contact_postal_code character varying NOT NULL,
+    contact_country character varying NOT NULL,
+    billing_first_name character varying NOT NULL,
+    billing_last_name character varying NOT NULL,
+    billing_email character varying NOT NULL,
+    billing_phone_1 character varying NOT NULL,
+    billing_phone_2 character varying,
+    billing_address_1 character varying NOT NULL,
+    billing_address_2 character varying,
+    billing_city character varying NOT NULL,
+    billing_region character varying NOT NULL,
+    billing_postal_code character varying NOT NULL,
+    billing_country character varying NOT NULL
+);
+
+
+--
+-- Name: insertion_orders_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.insertion_orders_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: insertion_orders_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.insertion_orders_id_seq OWNED BY public.insertion_orders.id;
 
 
 --
@@ -1208,6 +1270,13 @@ ALTER TABLE ONLY public.events ALTER COLUMN id SET DEFAULT nextval('public.event
 
 
 --
+-- Name: insertion_orders id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.insertion_orders ALTER COLUMN id SET DEFAULT nextval('public.insertion_orders_id_seq'::regclass);
+
+
+--
 -- Name: job_postings id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1362,6 +1431,14 @@ ALTER TABLE ONLY public.daily_summaries
 
 ALTER TABLE ONLY public.events
     ADD CONSTRAINT events_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: insertion_orders insertion_orders_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.insertion_orders
+    ADD CONSTRAINT insertion_orders_pkey PRIMARY KEY (id);
 
 
 --
@@ -2571,6 +2648,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20191014171135'),
 ('20191014205953'),
 ('20191105141709'),
-('20191201235552');
+('20191201235552'),
+('20191211172431');
 
 
