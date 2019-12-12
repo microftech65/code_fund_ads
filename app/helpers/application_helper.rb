@@ -273,6 +273,10 @@ module ApplicationHelper
     numerator / denominator.to_f
   end
 
+  def inline_circle_icon(icon_class, title: "")
+    tag.i "", class: [icon_class, "fa-2x"].join(" "), title: title, data: tooltip_expando
+  end
+
   private
 
   def redesigned_badge_for_role(role, wrap_class)
