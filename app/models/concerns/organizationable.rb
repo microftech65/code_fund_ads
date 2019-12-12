@@ -8,6 +8,6 @@ module Organizationable
   end
 
   def set_organization
-    self.organization = user.organization
+    self.organization = user&.organization
   end
 end

@@ -4,8 +4,16 @@
 import { Controller } from 'stimulus'
 import moment from 'moment'
 
+const selector = '[data-controller="select-date-range"]'
+
 function init (element, options = {}) {
   const defaultOptions = {
+    startDate: element.dataset.startDate,
+    endDate: element.dataset.endDate,
+    locale: {
+      format: 'MM/DD/YYYY',
+      firstDay: 1
+    },
     ranges: {
       'Next 30 Days': [moment(), moment().add(29, 'days')],
       'Next 60 Days': [moment(), moment().add(59, 'days')],
@@ -22,14 +30,18 @@ function init (element, options = {}) {
     }
   }
 
-  jQuery(element).daterangepicker(Object.assign(defaultOptions, options))
+  jQuery(element)
+    .daterangepicker(Object.assign(defaultOptions, options))
+    .on('apply.daterangepicker', () =>
+      element.dispatchEvent(new Event('input'))
+    )
 }
 
-document.addEventListener('cable-ready:after-morph', () => {
-  document
-    .querySelectorAll('[data-controller="select-date-range"]')
-    .forEach(element => init(element))
-})
+function rewire () {
+  document.querySelectorAll(selector).forEach(el => init(el))
+}
+
+document.addEventListener('cable-ready:after-morph', rewire)
 
 export default class extends Controller {
   connect () {

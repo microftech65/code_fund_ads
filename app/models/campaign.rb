@@ -79,6 +79,8 @@ class Campaign < ApplicationRecord
   include Taggable
 
   # relationships .............................................................
+  belongs_to :audience, optional: true
+  belongs_to :region, optional: true
   belongs_to :creative, -> { includes :creative_images }
   belongs_to :insertion_order, optional: true
   belongs_to :user
@@ -92,6 +94,8 @@ class Campaign < ApplicationRecord
   validate :validate_url
 
   # callbacks .................................................................
+  before_validation :assign_keywords
+  before_validation :assign_country_codes
   before_validation :sort_arrays
   before_validation :sanitize_creative_ids
   before_save :sanitize_assigned_property_ids
@@ -423,6 +427,16 @@ class Campaign < ApplicationRecord
     self.creative_ids = (creative_ids & permitted_creative_ids).compact.uniq
     self.creative_ids = [creative_id].compact if creative_ids.blank?
     self.creative_id = creative_ids.first unless creative_ids.include?(creative_id)
+  end
+
+  def assign_keywords
+    return unless audience
+    self.keywords = audience.keywords
+  end
+
+  def assign_country_codes
+    return unless region
+    self.country_codes = region.country_codes
   end
 
   def sort_arrays

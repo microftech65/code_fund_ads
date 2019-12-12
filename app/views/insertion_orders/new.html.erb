@@ -1,29 +1,19 @@
-<style type="text/css" rel="stylesheet">
-.ct-chart-bar .ct-label.ct-horizontal.ct-end {
-  transform-origin: 120% -28px;
-  transform: translate(-100%) rotate(-45deg);
-}
-.ct-series-a .ct-bar, .ct-series-a .ct-line, .ct-series-a .ct-point, .ct-series-a .ct-slice-donut {
-  stroke: salmon;
-}
-.ct-series-b .ct-bar, .ct-series-b .ct-line, .ct-series-b .ct-point, .ct-series-b .ct-slice-donut {
-  stroke: royalblue;
-}
-</style>
+<%# render "/insertion_orders/campaign" %>
+
 <div class="container">
+  <h1>Insertion Order Form</h1>
+  <hr>
+
   <div class="row">
-    <div class="col mt-5">
-
+    <div class="col-3">
       <div class="form-group">
-        <label>Audience</label>
-        <%= select_tag :audience, options_from_collection_for_select(Audience.all, "id", "name", @audience.id), class: "form-control", data: {reflex: "input->InsertionOrdersReflex#change_audience"} %>
+        <label>Budget (USD)</label>
+        <%= number_field_tag :budget, @insertion_order.budget, required: true, label: "Budget (USD)", class: "form-control", data: {reflex: "input->InsertionOrdersReflex#change_total_budget"} %>
+        <small class="text-muted">Usable Amount: <%= @insertion_order.budget.format %></small>
       </div>
+    </div>
 
-      <div class="form-group">
-        <label>Region</label>
-        <%= select_tag :audience, options_from_collection_for_select(Region.all, "id", "name", @region.id), class: "form-control", data: {reflex: "input->InsertionOrdersReflex#change_region"} %>
-      </div>
-
+    <div class="col-3">
       <div class="form-group">
         <label>Dates</label>
         <%= text_field_tag :date_range, nil, required: true, label: "Start / End Date",
@@ -31,31 +21,9 @@
             data: {
               controller: "select-date-range",
               reflex: "input->InsertionOrdersReflex#change_dates",
-              start_date: @adate.strftime("%m/%d/%Y"),
-              end_date: @bdate.strftime("%m/%d/%Y")
+              start_date: @insertion_order.start_date.to_s("mm/dd/yyyy"),
+              end_date: @insertion_order.end_date.to_s("mm/dd/yyyy"),
             } %>
-      </div>
-
-      <div class="form-group">
-        <label>Budget (USD)</label>
-        <%= number_field_tag :total_budget, @total_budget, required: true, label: "Budget (USD)", class: "form-control", data: {reflex: "input->InsertionOrdersReflex#change_total_budget"} %>
-        <small class="text-secondary">Spendable budget: <%= @total_budget.format %></small>
-      </div>
-
-      <div class="text-center mt-5">
-        <h3>
-          Purchasing
-          <code><%= number_with_delimiter @audience.purchasable_impressions_count(@adate, @bdate, region: @region, total_budget: @total_budget) %></code>
-          impressions at <%= tag.strong @audience.ecpm_for_region(@region).format %> eCMP
-          for a total of <%= tag.strong @total_budget.format %>
-        </h3>
-        <h3 class="mt-3">Estimated Impressions</h3>
-        <div style="height:200px"
-             data-controller="stacked-bar-chart"
-             data-start-date="<%= @adate.iso8601 %>"
-             data-end-date="<%= @bdate.iso8601 %>"
-             data-payload="<%= @audience.stacked_bar_chart_series(@adate, @bdate, region: @region, total_budget: @total_budget).to_json %>"></div>
-        <a class="btn btn-lg btn-primary mt-4 text-white">Next</a>
       </div>
     </div>
   </div>
