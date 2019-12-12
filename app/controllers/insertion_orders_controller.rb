@@ -1,7 +1,11 @@
 class InsertionOrdersController < ApplicationController
+  layout "public"
+
   def new
     @adate ||= session[:adate] ? Date.parse(session[:adate]) : 2.months.ago.beginning_of_month
     @bdate ||= session[:bdate] ? Date.parse(session[:bdate]) : @adate.end_of_month
+    # @adate = Date.current if @adate.past?
+    # @bdate = Date.current if @bdate.past?
     @audience = Audience.find(session[:audience_id] || Audience.blockchain.id)
     @region = Region.find(session[:region_id] || Region.united_states_and_canada.id)
     @total_budget = Money.new(session[:total_budget].to_i * 100, "USD")
