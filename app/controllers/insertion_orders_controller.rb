@@ -8,7 +8,6 @@ class InsertionOrdersController < ApplicationController
     @insertion_order.start_date = Date.current if @insertion_order.start_date.past?
     @insertion_order.end_date ||= @insertion_order.start_date.advance(weeks: 4).end_of_week
     @insertion_order.end_date = @insertion_order.start_date.advance(weeks: 4).end_of_week if @insertion_order.end_date.before?(@insertion_order.start_date)
-    @insertion_order.build_campaign if @insertion_order.campaigns.blank?
     stash_insertion_order @insertion_order
   end
 end

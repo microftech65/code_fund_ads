@@ -253,6 +253,12 @@ class Campaign < ApplicationRecord
 
   # public instance methods ...................................................
 
+  attr_accessor :temporary_id
+
+  def to_stashable_attributes
+    as_json.merge temporary_id: temporary_id
+  end
+
   def metadata
     key = "#{cache_key_with_version}/metadata"
     Rails.cache.fetch key do

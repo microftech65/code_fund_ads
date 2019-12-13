@@ -51,6 +51,7 @@ class InsertionOrder < ApplicationRecord
 
   # validations ...............................................................
   validate :validate_dates, on: [:create]
+  validate :validate_budget, on: [:create, :update]
 
   # callbacks .................................................................
   # scopes ....................................................................
@@ -69,6 +70,7 @@ class InsertionOrder < ApplicationRecord
     audience = Audience.blockchain
     region = Region.united_states_and_canada
     campaigns.build(
+      temporary_id: campaigns.size,
       audience: audience,
       region: region,
       start_date: start_date,
@@ -77,7 +79,15 @@ class InsertionOrder < ApplicationRecord
   end
 
   def to_stashable_attributes
-    as_json(root: true).merge(campaigns_attributes: campaigns.map(&:as_json))
+    as_json.merge campaigns_attributes: campaigns.map(&:to_stashable_attributes)
+  end
+
+  def allocated_budget
+    Money.new campaigns.sum(&:total_budget)
+  end
+
+  def budget_allocated?
+    budget > 0 && allocated_budget == budget
   end
 
   # protected instance methods ................................................
@@ -91,5 +101,10 @@ class InsertionOrder < ApplicationRecord
     errors[:start_date] << "cannot be in the past" if start_date.past?
     errors[:end_date] << "cannot be in the past" if end_date.past?
     errors[:end_date] << "cannot be earlier than start_date" if end_date < start_date
+  end
+
+  def validate_budget
+    return if budget_allocated?
+    errors[:budget] << "is not allocated properly"
   end
 end
