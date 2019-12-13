@@ -1,19 +1,11 @@
 class InsertionOrdersReflex < ApplicationReflex
   include InsertionOrders::Stashable
 
-  # def change_audience
-  #   session[:audience_id] = element[:value]
-  # end
-
-  # def change_region
-  #   session[:region_id] = element[:value]
-  # end
-
-  def change_budget
+  def set_budget
     insertion_order.budget = Money.new(element[:value].to_f * 100)
   end
 
-  def change_dates
+  def set_dates
     start_date, end_date = element[:value].split(" - ")
     insertion_order.assign_attributes start_date: Date.parse(start_date), end_date: Date.parse(end_date)
     insertion_order.campaigns.each do |campaign|
@@ -26,14 +18,31 @@ class InsertionOrdersReflex < ApplicationReflex
   end
 
   def remove_campaign
-    temporary_id = element.dataset["temporary-id"].to_i
-    campaign = insertion_order.campaigns.find { |c| c.temporary_id == temporary_id }
     insertion_order.campaigns.delete campaign
+  end
+
+  def set_campaign_budget
+    campaign.assign_attributes total_budget: Money.new(element[:value].to_f * 100)
+  end
+
+  def set_campaign_audience
+    campaign.assign_attributes audience_id: element[:value].to_i
+  end
+
+  def set_campaign_region
+    campaign.assign_attributes region_id: element[:value].to_i
   end
 
   private
 
   def insertion_order
     @insertion_order ||= stashed_insertion_order
+  end
+
+  def campaign
+    @campaign ||= begin
+      temporary_id = element.dataset["temporary-id"].to_i
+      insertion_order.campaigns.find { |c| c.temporary_id == temporary_id }
+    end
   end
 end

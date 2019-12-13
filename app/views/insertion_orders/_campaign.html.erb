@@ -15,7 +15,9 @@
   <div class="card-header bg-muted d-flex justify-content-between">
     <span>
       Campaign <%= campaign_iteration.index + 1 %>
-      <i class="fas fa-long-arrow-alt-right opacity-30 mx-1"></i>
+      <span class="opacity-30 mx-1">|</span>
+      <%= number_to_percentage campaign.budget_percentage_of_insertion_order, precision: 1 %> of Insertion Order
+      <span class="opacity-30 mx-1">|</span>
       <%= tag.strong number_with_delimiter campaign.audience.purchasable_impressions_count(campaign.start_date, campaign.end_date, region: campaign.region, total_budget: campaign.total_budget) %>
       impressions at <%= tag.code campaign.audience.ecpm_for_region(campaign.region).format %> eCMP
       for a total of <%= tag.code campaign.total_budget.format %>
@@ -26,17 +28,20 @@
     <li class="list-group-item">
       <div class="form-group">
         <label>Allocated Budget (USD)</label>
-        <%= number_field_tag :total_budget, campaign.total_budget, required: true, label: "Budget (USD)", class: "form-control", data: {reflex: "input->InsertionOrdersReflex#change_budget"} %>
+        <%= number_field_tag :total_budget, campaign.total_budget, required: true, label: "Budget (USD)", class: "form-control",
+          data: {temporary_id: campaign.temporary_id, reflex: "input->InsertionOrdersReflex#set_campaign_budget"} %>
       </div>
 
       <div class="form-group ml-2">
         <label>Audience</label>
-        <%= select_tag :audience, options_from_collection_for_select(Audience.all, "id", "name", campaign.audience.id), class: "form-control", data: {reflex: "input->InsertionOrdersReflex#change_audience"} %>
+        <%= select_tag :audience, options_from_collection_for_select(Audience.all, "id", "name", campaign.audience.id), class: "form-control",
+          data: {temporary_id: campaign.temporary_id, reflex: "input->InsertionOrdersReflex#set_campaign_audience"} %>
       </div>
 
       <div class="form-group ml-2">
         <label>Region</label>
-        <%= select_tag :audience, options_from_collection_for_select(Region.all, "id", "name", campaign.id), class: "form-control", data: {reflex: "input->InsertionOrdersReflex#change_region"} %>
+        <%= select_tag :audience, options_from_collection_for_select(Region.all, "id", "name", campaign.region_id), class: "form-control",
+          data: {temporary_id: campaign.temporary_id, reflex: "input->InsertionOrdersReflex#set_campaign_region"} %>
       </div>
     </li>
 

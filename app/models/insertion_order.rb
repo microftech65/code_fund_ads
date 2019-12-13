@@ -86,6 +86,12 @@ class InsertionOrder < ApplicationRecord
     Money.new campaigns.sum(&:total_budget)
   end
 
+  def allocated_budget_percentage
+    return 0 unless budget > 0
+    return 0 unless allocated_budget > 0
+    (allocated_budget.to_f / budget.to_f) * 100
+  end
+
   def budget_allocated?
     budget > 0 && allocated_budget == budget
   end

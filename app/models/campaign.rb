@@ -259,6 +259,13 @@ class Campaign < ApplicationRecord
     as_json.merge temporary_id: temporary_id
   end
 
+  def budget_percentage_of_insertion_order
+    return 0 unless insertion_order
+    return 0 unless total_budget > 0
+    return 0 unless insertion_order.budget > 0
+    (total_budget.to_f / insertion_order.budget.to_f) * 100
+  end
+
   def metadata
     key = "#{cache_key_with_version}/metadata"
     Rails.cache.fetch key do

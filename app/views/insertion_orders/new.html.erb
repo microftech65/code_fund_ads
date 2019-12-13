@@ -8,7 +8,7 @@
     <div class="col-3">
       <div class="form-group">
         <label>Budget (USD)</label>
-        <%= number_field_tag :budget, @insertion_order.budget, required: true, label: "Budget (USD)", class: "form-control", data: {reflex: "input->InsertionOrdersReflex#change_total_budget"} %>
+        <%= number_field_tag :budget, @insertion_order.budget, required: true, label: "Budget (USD)", class: "form-control form-control-lg", data: {reflex: "input->InsertionOrdersReflex#set_budget"} %>
         <small class="text-muted">Usable Amount: <%= @insertion_order.budget.format %></small>
       </div>
     </div>
@@ -17,13 +17,32 @@
       <div class="form-group">
         <label>Dates</label>
         <%= text_field_tag :date_range, nil, required: true, label: "Start / End Date",
-            class: "js-range-datepicker form-control bg-white rounded",
+            class: "js-range-datepicker form-control form-control-lg bg-white rounded",
             data: {
               controller: "select-date-range",
-              reflex: "input->InsertionOrdersReflex#change_dates",
+              reflex: "input->InsertionOrdersReflex#set_dates",
               start_date: @insertion_order.start_date.to_s("mm/dd/yyyy"),
               end_date: @insertion_order.end_date.to_s("mm/dd/yyyy"),
             } %>
+      </div>
+    </div>
+
+    <div class="col-3">
+      <div class="form-group">
+        <label>Allocated Budget</label>
+        <div class="form-control form-control-lg bg-transparent">
+          <%= @insertion_order.allocated_budget.format %>
+          <span class="text-muted">(<%= number_to_percentage @insertion_order.allocated_budget_percentage, precision: 1 %>)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-3">
+      <div class="form-group">
+        <label>Impressions</label>
+        <div class="form-control form-control-lg bg-transparent">
+          coming soon...
+        </div>
       </div>
     </div>
   </div>
