@@ -1,6 +1,6 @@
 <%# render "/insertion_orders/campaign" %>
 
-<div class="container">
+<div class="container" data-controller="insertion-orders">
   <h1>Insertion Order Form</h1>
   <hr />
 
@@ -41,14 +41,15 @@
       <div class="form-group">
         <label>Impressions</label>
         <div class="form-control form-control-lg bg-transparent">
-          coming soon...
+          <%= number_with_delimiter @insertion_order.expected_impressions_count %>
         </div>
       </div>
     </div>
   </div>
 
+  <%= render partial: "/insertion_orders/campaign", collection: @insertion_order.campaigns %>
+
   <% unless @insertion_order.budget_allocated? %>
-    <%= render partial: "/insertion_orders/campaign", collection: @insertion_order.campaigns %>
     <div class="row">
       <div class="col">
         <div class="form-group">

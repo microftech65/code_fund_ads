@@ -22,7 +22,11 @@ class InsertionOrdersReflex < ApplicationReflex
   end
 
   def set_campaign_budget
-    campaign.assign_attributes total_budget: Money.new(element[:value].to_f * 100)
+    budget = Money.new(element[:value].to_f * 100)
+    campaign.total_budget = 0
+    unallocated_budget = insertion_order.unallocated_budget
+    budget = unallocated_budget if unallocated_budget < budget
+    campaign.total_budget = budget
   end
 
   def set_campaign_audience

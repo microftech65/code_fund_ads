@@ -82,7 +82,17 @@ class InsertionOrder < ApplicationRecord
     as_json.merge campaigns_attributes: campaigns.map(&:to_stashable_attributes)
   end
 
+  def unallocated_budget
+    budget - allocated_budget
+  end
+
   def allocated_budget
+    allocated = campaigns_total_budget
+    return budget if allocated > budget
+    allocated
+  end
+
+  def campaigns_total_budget
     Money.new campaigns.sum(&:total_budget)
   end
 
@@ -94,6 +104,10 @@ class InsertionOrder < ApplicationRecord
 
   def budget_allocated?
     budget > 0 && allocated_budget == budget
+  end
+
+  def expected_impressions_count
+    campaigns.sum(&:expected_impressions_count)
   end
 
   # protected instance methods ................................................
