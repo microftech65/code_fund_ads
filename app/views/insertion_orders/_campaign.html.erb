@@ -30,19 +30,19 @@
         <li class="list-group-item">
           <div class="form-group" data-total-budget="<%= campaign.total_budget.to_f %>">
             <label>Allocated Budget (USD)</label>
-            <%= number_field_tag :total_budget, campaign.total_budget, required: true, label: "Budget (USD)", class: "form-control",
+            <%= number_field_tag :total_budget, campaign.total_budget, id: "total_budget-#{campaign.temporary_id}", required: true, label: "Budget (USD)", class: "form-control",
               data: {temporary_id: campaign.temporary_id, reflex: "input->InsertionOrdersReflex#set_campaign_budget", reflex_allow: true} %>
           </div>
 
           <div class="form-group ml-2">
             <label>Audience</label>
-            <%= select_tag :audience, options_from_collection_for_select(Audience.all, "id", "name", campaign.audience.id), class: "form-control",
+            <%= select_tag :audience, options_from_collection_for_select(Audience.all, "id", "name", campaign.audience.id), id: "audience-#{campaign.temporary_id}", class: "form-control",
               data: {temporary_id: campaign.temporary_id, reflex: "input->InsertionOrdersReflex#set_campaign_audience"} %>
           </div>
 
           <div class="form-group ml-2">
             <label>Region</label>
-            <%= select_tag :audience, options_from_collection_for_select(Region.all, "id", "name", campaign.region_id), class: "form-control",
+            <%= select_tag :region, options_from_collection_for_select(Region.all, "id", "name", campaign.region_id), id: "region-#{campaign.temporary_id}", class: "form-control",
               data: {temporary_id: campaign.temporary_id, reflex: "input->InsertionOrdersReflex#set_campaign_region"} %>
           </div>
         </li>
