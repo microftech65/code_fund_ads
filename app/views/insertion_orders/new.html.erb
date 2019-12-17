@@ -1,15 +1,18 @@
 <%# render "/insertion_orders/campaign" %>
 
 <div class="container" data-controller="insertion-orders">
-  <h1>Insertion Order Form</h1>
+  <h1>
+    Insertion Order Form
+    <small><i class="fas fa-spinner text-info" hidden data-target="insertion-orders.spinner"></i></small>
+  </h1>
   <hr />
 
   <div class="row">
     <div class="col-3">
       <div class="form-group">
         <label>Budget (USD)</label>
-        <%= number_field_tag :budget, @insertion_order.budget, required: true, label: "Budget (USD)", class: "form-control form-control-lg", data: {reflex: "input->InsertionOrdersReflex#set_budget"} %>
-        <small class="text-muted">Usable Amount: <%= @insertion_order.budget.format %></small>
+        <%= number_field_tag :budget, @insertion_order.budget, required: true, label: "Budget (USD)", class: "form-control form-control-lg", data: {reflex: "debounced-input->InsertionOrdersReflex#set_budget"} %>
+        <small class="text-muted">Usable Budget: <%= @insertion_order.budget.format %></small>
       </div>
     </div>
 
@@ -20,7 +23,7 @@
             class: "js-range-datepicker form-control form-control-lg bg-white rounded",
             data: {
               controller: "select-date-range",
-              reflex: "input->InsertionOrdersReflex#set_dates",
+              reflex: "debounced-input->InsertionOrdersReflex#set_dates",
               start_date: @insertion_order.start_date.to_s("mm/dd/yyyy"),
               end_date: @insertion_order.end_date.to_s("mm/dd/yyyy"),
             } %>

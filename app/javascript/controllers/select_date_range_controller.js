@@ -33,7 +33,7 @@ function init (element, options = {}) {
   jQuery(element)
     .daterangepicker(Object.assign(defaultOptions, options))
     .on('apply.daterangepicker', () =>
-      element.dispatchEvent(new Event('input'))
+      element.dispatchEvent(new Event('input', { bubbles: true }))
     )
 }
 

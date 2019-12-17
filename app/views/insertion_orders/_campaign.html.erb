@@ -1,17 +1,4 @@
-<style type="text/css" rel="stylesheet">
-.ct-chart-bar .ct-label.ct-horizontal.ct-end {
-  transform-origin: 120% -28px;
-  transform: translate(-100%) rotate(-45deg);
-}
-.ct-series-a .ct-bar, .ct-series-a .ct-line, .ct-series-a .ct-point, .ct-series-a .ct-slice-donut {
-  stroke: salmon;
-}
-.ct-series-b .ct-bar, .ct-series-b .ct-line, .ct-series-b .ct-point, .ct-series-b .ct-slice-donut {
-  stroke: royalblue;
-}
-</style>
-
-<div class="row">
+<div id="campaign-<%= campaign.temporary_id %>" class="row" data-campaign>
   <div class="col">
     <div class="card">
       <div class="card-header bg-muted d-flex justify-content-between">
@@ -20,6 +7,7 @@
           <span class="opacity-30 mx-1">|</span>
           <%= number_to_percentage campaign.budget_percentage_of_insertion_order, precision: 1 %> of Insertion Order
           <span class="opacity-30 mx-1">|</span>
+          Reserved
           <%= tag.strong number_with_delimiter campaign.audience.purchasable_impressions_count(campaign.start_date, campaign.end_date, region: campaign.region, total_budget: campaign.total_budget) %>
           impressions at <%= tag.code campaign.audience.ecpm_for_region(campaign.region).format %> eCPM
           for a total of <%= tag.code campaign.total_budget.format %>
@@ -27,31 +15,32 @@
         <i class="fas fa-times cursor-pointer" data-reflex="click->InsertionOrdersReflex#remove_campaign" data-temporary-id="<%= campaign.temporary_id %>"></i>
       </div>
       <ul class="list-group list-group-flush">
-        <li class="list-group-item">
-          <div class="form-group" data-total-budget="<%= campaign.total_budget.to_f %>">
+        <li class="list-group-item pb-0">
+          <div class="form-group">
             <label>Allocated Budget (USD)</label>
             <%= number_field_tag :total_budget, campaign.total_budget, id: "total_budget-#{campaign.temporary_id}", required: true, label: "Budget (USD)", class: "form-control",
-              data: {temporary_id: campaign.temporary_id, reflex: "input->InsertionOrdersReflex#set_campaign_budget", reflex_allow: true} %>
+              data: {temporary_id: campaign.temporary_id, reflex: "debounced-input->InsertionOrdersReflex#set_campaign_budget"} %>
+            <small class="text-muted">Usable Budget: <%= campaign.total_budget.format %></small>
           </div>
 
           <div class="form-group ml-2">
             <label>Audience</label>
             <%= select_tag :audience, options_from_collection_for_select(Audience.all, "id", "name", campaign.audience.id), id: "audience-#{campaign.temporary_id}", class: "form-control",
-              data: {temporary_id: campaign.temporary_id, reflex: "input->InsertionOrdersReflex#set_campaign_audience"} %>
+              data: {temporary_id: campaign.temporary_id, reflex: "debounced-input->InsertionOrdersReflex#set_campaign_audience"} %>
           </div>
 
           <div class="form-group ml-2">
             <label>Region</label>
             <%= select_tag :region, options_from_collection_for_select(Region.all, "id", "name", campaign.region_id), id: "region-#{campaign.temporary_id}", class: "form-control",
-              data: {temporary_id: campaign.temporary_id, reflex: "input->InsertionOrdersReflex#set_campaign_region"} %>
+              data: {temporary_id: campaign.temporary_id, reflex: "debounced-input->InsertionOrdersReflex#set_campaign_region"} %>
           </div>
         </li>
 
-        <li class="list-group-item">
+        <li class="list-group-item pt-0">
           <div class="text-center" style="width:100%;">
-            Estimated Daily Impressions
-            <div style="height:200px; width:100%;"
-                 data-controller="stacked-bar-chart"
+            <p class="lead m-0 p-0">Estimated Daily Impressions</p>
+            <div style="height:200px;"
+                 data-controller="inventory-chart"
                  data-start-date="<%= campaign.start_date.iso8601 %>"
                  data-end-date="<%= campaign.end_date.iso8601 %>"
                  data-payload="<%= campaign.audience.stacked_bar_chart_series(campaign.start_date, campaign.end_date, region: campaign.region, total_budget: campaign.total_budget).to_json %>"></div>
