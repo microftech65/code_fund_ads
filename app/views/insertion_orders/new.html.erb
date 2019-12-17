@@ -11,8 +11,9 @@
     <div class="col-3">
       <div class="form-group">
         <label>Budget (USD)</label>
-        <%= number_field_tag :budget, @insertion_order.budget, required: true, label: "Budget (USD)", class: "form-control form-control-lg", data: {reflex: "debounced-input->InsertionOrdersReflex#set_budget"} %>
-        <small class="text-muted">Usable Budget: <%= @insertion_order.budget.format %></small>
+        <%= number_field_tag :budget, @insertion_order.budget, autofocus: true, required: true, label: "Budget (USD)",
+          class: "form-control form-control-lg", data: {reflex: "debounced-input->InsertionOrdersReflex#set_budget"} %>
+        <small class="text-muted">Usable Budget: <%= @insertion_order.budget.format(no_cents: true) %></small>
       </div>
     </div>
 
@@ -52,13 +53,15 @@
 
   <%= render partial: "/insertion_orders/campaign", collection: @insertion_order.campaigns %>
 
-  <% unless @insertion_order.budget_allocated? %>
-    <div class="row">
-      <div class="col">
-        <div class="form-group">
+  <div class="row">
+    <div class="col">
+      <div class="form-group">
+        <% if @insertion_order.budget_allocated? %>
+          <a href="" class="btn btn-lg btn-success mt-4 text-white" data-reflex="">Submit Insertion Order</a>
+        <% else %>
           <a href="" class="btn btn-lg btn-primary mt-4 text-white" data-reflex="click->InsertionOrdersReflex#add_campaign">Add Campaign</a>
-        </div>
+        <% end %>
       </div>
     </div>
-  <% end %>
+  </div>
 </div>

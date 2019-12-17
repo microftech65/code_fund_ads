@@ -3,6 +3,7 @@ class InsertionOrdersReflex < ApplicationReflex
 
   def set_budget
     insertion_order.budget = Money.new(element[:value].to_f * 100)
+    adjust_campaign_budgets
   end
 
   def set_dates
@@ -22,11 +23,8 @@ class InsertionOrdersReflex < ApplicationReflex
   end
 
   def set_campaign_budget
-    budget = Money.new(element[:value].to_f * 100)
-    campaign.total_budget = 0
-    unallocated_budget = insertion_order.unallocated_budget
-    budget = unallocated_budget if unallocated_budget < budget
-    campaign.total_budget = budget
+    campaign.total_budget = Money.new(element[:value].to_f * 100)
+    adjust_campaign_budgets
   end
 
   def set_campaign_audience
@@ -47,6 +45,16 @@ class InsertionOrdersReflex < ApplicationReflex
     @campaign ||= begin
       temporary_id = element.dataset["temporary-id"].to_i
       insertion_order.campaigns.find { |c| c.temporary_id == temporary_id }
+    end
+  end
+
+  def adjust_campaign_budgets
+    available_funds = insertion_order.budget
+    insertion_order.campaigns.each do |campaign|
+      budget = campaign.total_budget
+      budget = available_funds if available_funds < budget
+      campaign.total_budget = budget
+      available_funds -= budget
     end
   end
 end

@@ -1,10 +1,12 @@
 import ApplicationController from './application_controller'
 
+const chartSelector = '[data-controller="inventory-chart"]'
+
 export default class extends ApplicationController {
   static targets = ['spinner']
 
   addChartPermanents (ignore) {
-    document.querySelectorAll('[data-campaign]').forEach(element => {
+    document.querySelectorAll(chartSelector).forEach(element => {
       if (element !== ignore)
         element.setAttribute('data-reflex-permanent', true)
     })
@@ -12,13 +14,13 @@ export default class extends ApplicationController {
 
   addAllChartPermanents (ignore) {
     document
-      .querySelectorAll('[data-campaign]')
+      .querySelectorAll(chartSelector)
       .forEach(element => element.setAttribute('data-reflex-permanent', true))
   }
 
   removeAllChartPermanents () {
     document
-      .querySelectorAll('[data-campaign]')
+      .querySelectorAll(chartSelector)
       .forEach(element => element.removeAttribute('data-reflex-permanent'))
   }
 
@@ -49,15 +51,21 @@ export default class extends ApplicationController {
   }
 
   beforeSetCampaignBudget (element) {
-    this.addChartPermanents(element.closest('[data-campaign]'))
+    this.addChartPermanents(
+      element.closest('[data-campaign]').querySelector(chartSelector)
+    )
   }
 
   beforeSetCampaignAudience (element) {
-    this.addChartPermanents(element.closest('[data-campaign]'))
+    this.addChartPermanents(
+      element.closest('[data-campaign]').querySelector(chartSelector)
+    )
   }
 
   beforeSetCampaignRegion (element) {
-    this.addChartPermanents(element.closest('[data-campaign]'))
+    this.addChartPermanents(
+      element.closest('[data-campaign]').querySelector(chartSelector)
+    )
   }
 
   beforeReflex () {
