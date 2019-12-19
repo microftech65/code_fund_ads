@@ -259,14 +259,14 @@ class Campaign < ApplicationRecord
     as_json.merge temporary_id: temporary_id
   end
 
+  def estimate
+    @estimate ||= CampaignEstimate.new(campaign: self)
+  end
+
   def budget_percentage_of_insertion_order
     return 0 unless insertion_order&.budget.to_i > 0
     return 0 unless total_budget > 0
     (total_budget.to_f / insertion_order.budget.to_f) * 100
-  end
-
-  def expected_impressions_count
-    audience&.purchasable_impressions_count start_date, end_date, region: region, total_budget: total_budget
   end
 
   def metadata

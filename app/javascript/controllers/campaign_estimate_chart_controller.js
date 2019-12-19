@@ -3,6 +3,8 @@ import * as am4core from '@amcharts/amcharts4/core'
 import * as am4charts from '@amcharts/amcharts4/charts'
 import am4themes_material from '@amcharts/amcharts4/themes/material'
 
+const selector = '[data-controller="campaign-estimate-chart"]'
+
 function dispose (element) {
   if (!element.chart) return
   element.chart.dispose()
@@ -25,7 +27,11 @@ function initAmCharts (element) {
   dispose(element)
   am4core.useTheme(am4themes_material)
   const chart = am4core.create(element, am4charts.XYChart)
-  chart.colors.list = [am4core.color('#4fcb4a'), am4core.color('#1181b2')]
+  chart.colors.list = [
+    am4core.color('#b76ba3'),
+    am4core.color('#1181b2'),
+    am4core.color('#4fcb4a')
+  ]
   chart.data = JSON.parse(element.dataset.payload)
 
   const categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis())
@@ -37,8 +43,10 @@ function initAmCharts (element) {
   valueAxis.renderer.labels.template.disabled = true
   valueAxis.min = 0
 
-  addAmChartSeries(chart, 'available', 'Available Impressions')
-  addAmChartSeries(chart, 'reserved', 'Reserved Impressions')
+  console.log('nate', chart.data)
+  addAmChartSeries(chart, 'sold', 'Sold')
+  addAmChartSeries(chart, 'available', 'Available')
+  addAmChartSeries(chart, 'purchasing', 'Purchasing')
   chart.legend = new am4charts.Legend()
   element.chart = chart
 }
@@ -49,9 +57,7 @@ function init (element) {
 }
 
 function rewire () {
-  document
-    .querySelectorAll('[data-controller="inventory-chart"]')
-    .forEach(el => init(el))
+  document.querySelectorAll(selector).forEach(el => init(el))
 }
 
 document.addEventListener('cable-ready:after-morph', rewire)

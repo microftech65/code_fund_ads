@@ -107,7 +107,9 @@ class InsertionOrder < ApplicationRecord
   end
 
   def expected_impressions_count
-    campaigns.sum(&:expected_impressions_count)
+    campaigns.sum do |campaign|
+      campaign.estimate.expected_impressions_count
+    end
   end
 
   # protected instance methods ................................................

@@ -11,7 +11,6 @@
 class Audience < ApplicationRecord
   # extends ...................................................................
   # includes ..................................................................
-  include Audiences::Presentable
   include Taggable
 
   # relationships .............................................................
@@ -137,33 +136,16 @@ class Audience < ApplicationRecord
       .order(:displayed_at_date)
   end
 
-  def adjusted_total_budget(start_date = nil, end_date = nil, region:, total_budget:)
-    max_budget = available_impressions_price(start_date, end_date, region: region)
-    return max_budget if max_budget < total_budget
-    total_budget
-  end
+  # def adjusted_total_budget(start_date = nil, end_date = nil, region:, total_budget:)
+  #   max_budget = available_impressions_price(start_date, end_date, region: region)
+  #   return max_budget if max_budget < total_budget
+  #   total_budget
+  # end
 
-  def purchasable_impressions_count(start_date = nil, end_date = nil, region:, total_budget:)
-    budget = adjusted_total_budget(start_date, end_date, region: region, total_budget: total_budget)
-    (budget.to_f / single_impression_price_for_region(region)).round
-  end
-
-  def available_impressions_price(start_date = nil, end_date = nil, region:)
-    fractional_dollars = single_impression_price_for_region(region) * available_impressions_count(start_date, end_date, region: region)
-    cents = fractional_dollars * 100
-    Money.new cents, "USD"
-  end
-
-  def available_impressions_count(start_date = nil, end_date = nil, region: nil)
-    available_daily_impressions_counts(start_date, end_date, region: region).values.sum
-  end
-
-  def available_daily_impressions_counts(start_date = nil, end_date = nil, region: nil)
-    impressions = average_daily_impressions_counts(region: region)
-    (Date.coerce(start_date)..Date.coerce(end_date)).each_with_object({}) do |date, memo|
-      memo[date] = impressions[date.day]
-    end
-  end
+  # def purchasable_impressions_count(start_date = nil, end_date = nil, region:, total_budget:)
+  #   budget = adjusted_total_budget(start_date, end_date, region: region, total_budget: total_budget)
+  #   (budget.to_f / single_impression_price_for_region(region)).round
+  # end
 
   def average_daily_impressions_counts(region: nil)
     list = dailies(3.months.ago.beginning_of_month, 1.month.ago.end_of_month, region: region).to_a

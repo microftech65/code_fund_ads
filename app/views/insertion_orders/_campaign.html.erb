@@ -7,17 +7,16 @@
           <span class="opacity-30 mx-1">|</span>
           <%= number_to_percentage campaign.budget_percentage_of_insertion_order, precision: 1 %> of Insertion Order
           <span class="opacity-30 mx-1">|</span>
-          Reserved
-          <%= tag.strong number_with_delimiter campaign.audience.purchasable_impressions_count(campaign.start_date, campaign.end_date, region: campaign.region, total_budget: campaign.total_budget) %>
-          impressions at <%= tag.code campaign.audience.ecpm_for_region(campaign.region).format %> eCPM
-          for a total of <%= tag.code campaign.total_budget.format(symbol: false, no_cents: true) %>
+          <%= tag.strong number_with_delimiter(campaign.estimate.expected_impressions_count) %>
+          impressions at <%= tag.code campaign.estimate.ecpm.format %> eCPM
+          for a total of <%= tag.code campaign.estimate.budget.format(symbol: false, no_cents: true) %>
         </span>
         <i class="fas fa-times cursor-pointer" data-reflex="click->InsertionOrdersReflex#remove_campaign" data-temporary-id="<%= campaign.temporary_id %>"></i>
       </div>
       <ul class="list-group list-group-flush">
         <li class="list-group-item pb-0">
           <div class="form-group">
-            <label>Allocated Budget (USD)</label>
+            <label>Budget (USD)</label>
             <%= number_field_tag :total_budget, campaign.total_budget, id: "total_budget-#{campaign.temporary_id}", autofocus: true, required: true, label: "Budget (USD)", class: "form-control",
               data: {temporary_id: campaign.temporary_id, reflex: "debounced-input->InsertionOrdersReflex#set_campaign_budget"} %>
             <small class="text-muted">Usable Budget: <%= campaign.total_budget.format(no_cents: true) %></small>
@@ -38,10 +37,10 @@
 
         <li class="list-group-item py-0 my-0">
           <div style="width:100%; height:200px; position:relative; top:-15px;"
-               data-controller="inventory-chart"
+               data-controller="campaign-estimate-chart"
                data-start-date="<%= campaign.start_date.iso8601 %>"
                data-end-date="<%= campaign.end_date.iso8601 %>"
-               data-payload="<%= campaign.audience.stacked_bar_chart_series(campaign.start_date, campaign.end_date, region: campaign.region, total_budget: campaign.total_budget).to_json %>"></div>
+               data-payload="<%= campaign.estimate.to_stacked_bar_chart_series.to_json %>"></div>
         </li>
       </ul>
     </div>
