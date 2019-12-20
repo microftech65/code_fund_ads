@@ -43,10 +43,9 @@ function initAmCharts (element) {
   valueAxis.renderer.labels.template.disabled = true
   valueAxis.min = 0
 
-  console.log('nate', chart.data)
   addAmChartSeries(chart, 'sold', 'Sold')
   addAmChartSeries(chart, 'available', 'Available')
-  addAmChartSeries(chart, 'purchasing', 'Purchasing')
+  addAmChartSeries(chart, 'estimated', 'Estimated')
   chart.legend = new am4charts.Legend()
   element.chart = chart
 }

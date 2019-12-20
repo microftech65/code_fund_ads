@@ -1,6 +1,6 @@
 import ApplicationController from './application_controller'
 
-const chartSelector = '[data-controller="inventory-chart"]'
+const chartSelector = '[data-controller="campaign-estimate-chart"]'
 
 export default class extends ApplicationController {
   static targets = ['spinner']

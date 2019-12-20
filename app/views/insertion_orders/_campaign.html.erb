@@ -7,9 +7,9 @@
           <span class="opacity-30 mx-1">|</span>
           <%= number_to_percentage campaign.budget_percentage_of_insertion_order, precision: 1 %> of Insertion Order
           <span class="opacity-30 mx-1">|</span>
-          <%= tag.strong number_with_delimiter(campaign.estimate.expected_impressions_count) %>
+          <%= tag.strong number_with_delimiter(campaign.estimate.estimated_impressions_count) %>
           impressions at <%= tag.code campaign.estimate.ecpm.format %> eCPM
-          for a total of <%= tag.code campaign.estimate.budget.format(symbol: false, no_cents: true) %>
+          for a total of <%= tag.code campaign.estimate.adjusted_budget.format %>
         </span>
         <i class="fas fa-times cursor-pointer" data-reflex="click->InsertionOrdersReflex#remove_campaign" data-temporary-id="<%= campaign.temporary_id %>"></i>
       </div>

@@ -106,9 +106,9 @@ class InsertionOrder < ApplicationRecord
     budget > 0 && allocated_budget == budget
   end
 
-  def expected_impressions_count
+  def estimated_impressions_count
     campaigns.sum do |campaign|
-      campaign.estimate.expected_impressions_count
+      campaign.estimate.estimated_impressions_count
     end
   end
 

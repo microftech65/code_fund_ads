@@ -259,7 +259,8 @@ class Campaign < ApplicationRecord
     as_json.merge temporary_id: temporary_id
   end
 
-  def estimate
+  def estimate(fresh = false)
+    @estimate = nil if fresh
     @estimate ||= CampaignEstimate.new(campaign: self)
   end
 
