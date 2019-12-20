@@ -28,7 +28,7 @@ function initAmCharts (element) {
   am4core.useTheme(am4themes_material)
   const chart = am4core.create(element, am4charts.XYChart)
   chart.colors.list = [
-    am4core.color('#b76ba3'),
+    am4core.color('#495057'),
     am4core.color('#1181b2'),
     am4core.color('#4fcb4a')
   ]
@@ -45,7 +45,7 @@ function initAmCharts (element) {
 
   addAmChartSeries(chart, 'sold', 'Sold')
   addAmChartSeries(chart, 'available', 'Available')
-  addAmChartSeries(chart, 'estimated', 'Estimated')
+  addAmChartSeries(chart, 'estimated', 'Estimated Max')
   chart.legend = new am4charts.Legend()
   element.chart = chart
 }

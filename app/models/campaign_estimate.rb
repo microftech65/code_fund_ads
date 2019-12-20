@@ -25,20 +25,24 @@ class CampaignEstimate
     dates.size
   end
 
+  def target_daily_spend
+    budget / days.to_f
+  end
+
   # The daily-budget for the budget and days.
   # NOTE: The calculated value is padded to allow for traffic spikes and lulls.
-  def daily_budget
-    return (budget / days.to_f) * 1.3 if days > 0
+  def daily_budget_cap
+    return target_daily_spend * 1.5 if days > 0
     Money.new(0)
   end
 
-  def hourly_budget
-    daily_budget / 3
+  def hourly_budget_cap
+    daily_budget_cap / 3
   end
 
   # The maximum number of impressions for each day.
-  def daily_impressions_count
-    @daily_impressions_count ||= (daily_budget.to_f / individual_impression_price.to_f).floor
+  def max_daily_impressions_count
+    @max_daily_impressions_count ||= (daily_budget_cap.to_f / individual_impression_price.to_f).floor
   end
 
   # The fractional price (in US dollars) of a single impression.
@@ -46,8 +50,12 @@ class CampaignEstimate
     @individual_impression_price ||= ecpm.to_f / 1000
   end
 
-  def desired_impressions_count
-    @desired_impressions_count ||= (budget.to_f / individual_impression_price).floor
+  def target_impressions_count
+    @target_impressions_count ||= (budget.to_f / individual_impression_price).floor
+  end
+
+  def target_daily_impressions_count
+    @target_daily_impressions_count ||= (target_daily_spend.to_f / individual_impression_price.to_f).floor
   end
 
   # The average number of impressions for the audience and region.
@@ -60,12 +68,21 @@ class CampaignEstimate
     @available_impressions_count ||= available_daily_impressions.values.sum { |data| data[:count] }
   end
 
+  def available_impressions_count_daily_average
+    @avaliable_impressions_daily_average ||= (available_impressions_count / days.to_f).floor
+  end
+
   # The estimated number of impressions.
   def estimated_impressions_count
     @estimated_impressions_count ||= [
-      desired_impressions_count,
-      estimated_daily_impressions.values.sum { |data| data[:count] },
+      target_impressions_count,
+      dates.map { |date| impressions_on(date)[:estimated] }.sum,
     ].min
+  end
+
+  # The estimated number of daily impressions.
+  def estimated_daily_impressions_count
+    (estimated_impressions_count / days.to_f).floor
   end
 
   # The monetary value of the average number of impressions for the audience and region.
@@ -117,43 +134,29 @@ class CampaignEstimate
     end
   end
 
-  # Expected daily impressions stats for this estimate.
-  #
-  # NOTE: The daily counts/values will typically be higher than what the budget supports.
-  #       This allows us to accomodate daily variance in traffic patterns.
-  #
-  # Returns a Hash with the following data structure:
-  #
-  # {Date: {count: INTEGER, value: Money}
-  def estimated_daily_impressions
-    @estimated_daily_impressions ||= begin
-      available_daily_impressions.each_with_object({}) do |(date, data), memo|
-        count = [daily_impressions_count, data[:count]].min
-        value = Money.new((count * individual_impression_price) * 100)
-        memo[date] = {count: count, value: value}
-      end
-    end
-  end
-
   def impressions_on(date)
-    average_count = average_daily_impressions[date][:count]
-    available_count = available_daily_impressions[date][:count]
-    sold_count = average_count - available_count
-    estimated_count = estimated_daily_impressions[date][:count]
+    @impressions_on ||= {}
+    @impressions_on[date] ||= begin
+      average_count = average_daily_impressions[date][:count]
+      available_count = available_daily_impressions[date][:count]
+      sold_count = average_count - available_count
+      estimated_min_count = [target_daily_impressions_count, available_count].min
+      estimated_max_count = [max_daily_impressions_count, available_count].min
 
-    # TODO: fix multiplier
-    # multiplier = ?
-    # estimated_count = (estimated_count * multiplier).floor
-    estimated_count = available_count if available_count < estimated_count
-    available_count -= estimated_count
+      multiplier = available_count / available_impressions_count_daily_average.to_f
+      estimated_min_count = [(estimated_min_count * multiplier).floor, available_count].min
+      estimated_max_count = [(estimated_max_count * multiplier).floor, available_count].min
+      estimated_count = [((estimated_min_count + estimated_max_count) / 2.to_f).floor, max_daily_impressions_count].min
+      available_count -= estimated_count
 
-    {
-      date: date.iso8601,
-      average: average_count,
-      sold: sold_count,
-      available: available_count,
-      estimated: estimated_count,
-    }
+      {
+        date: date.iso8601,
+        average: average_count,
+        sold: sold_count,
+        available: available_count,
+        estimated: estimated_count,
+      }
+    end
   end
 
   def to_stacked_bar_chart_series
