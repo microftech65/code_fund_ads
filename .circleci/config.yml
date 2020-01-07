@@ -30,6 +30,7 @@ executors:
         environment:
           POSTGRES_USER: ubuntu
           POSTGRES_DB: code_fund_ads_test
+          CAMPAIGN_DEMO_ID: "395"
   node:
     <<: *defaults
     docker:
