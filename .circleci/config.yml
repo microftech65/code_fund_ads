@@ -85,14 +85,15 @@ aliases:
   - &restore_asset_cache
     name: Restoring asset cache
     keys:
-      - assets-cache-v1-{{ arch }}-{{ .Branch }}
-      - assets-cache-v1-{{ arch }}
+      - assets-cache-v2-{{ arch }}-{{ .Branch }}
+      - assets-cache-v2-{{ arch }}
 
   - &save_asset_cache
     name: Saving asset cache
-    key: assets-cache-v1-{{ arch }}-{{ .Branch }}
+    key: assets-cache-v2-{{ arch }}-{{ .Branch }}
     paths:
       - ~/code_fund_ads/public/packs-test
+      - ~/code_fund_ads/tmp/cache/webpacker
 
   - &precompile_assets
     name: precompile assets
@@ -165,11 +166,9 @@ jobs:
 
   integration_tests:
     executor: node_tests
-    parallelism: 3
+    parallelism: 4
     steps:
       - checkout
-      - attach_workspace:
-          at: ~/code_fund_ads
       - run_bundler
       - run_yarn
       - run_asset_precompilation
@@ -180,20 +179,6 @@ jobs:
           command: |
             circleci tests glob test/{controllers,integration}/**/*_test.rb | circleci tests split > /tmp/integration-tests
             bundle exec rails test $(cat /tmp/integration-tests)
-
-  system_tests:
-    executor: node_tests
-    parallelism: 3
-    steps:
-      - checkout
-      - attach_workspace:
-          at: ~/code_fund_ads
-      - run_bundler
-      - run_yarn
-      - run_asset_precompilation
-      - run: *install_dependencies
-      - run: dockerize -wait tcp://localhost:5432 -timeout 1m
-      - run: *db_setup
       - run:
           name: Run System Tests
           command: |
@@ -202,6 +187,29 @@ jobs:
       - store_artifacts:
           path: tmp/screenshots
           destination: screenshots
+
+
+  # system_tests:
+  #   executor: node_tests
+  #   parallelism: 3
+  #   steps:
+  #     - checkout
+  #     - attach_workspace:
+  #         at: ~/code_fund_ads
+  #     - run_bundler
+  #     - run_yarn
+  #     - run_asset_precompilation
+  #     - run: *install_dependencies
+  #     - run: dockerize -wait tcp://localhost:5432 -timeout 1m
+  #     - run: *db_setup
+  #     - run:
+  #         name: Run System Tests
+  #         command: |
+  #           circleci tests glob test/system/*.rb | circleci tests split > /tmp/system-tests
+  #           bundle exec rails test $(cat /tmp/system-tests) -v --backtrace
+  #     - store_artifacts:
+  #         path: tmp/screenshots
+  #         destination: screenshots
 
   standardrb_check:
     executor: ruby
