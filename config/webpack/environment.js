@@ -10,7 +10,6 @@ environment.plugins.prepend(
     'window.jQuery': 'jquery',
     Popper: ['popper.js', 'default'],
     Chart: 'chart.js',
-    Typed: 'typed.js',
     SVGInjector: 'svg-injector',
     Noty: 'noty',
     ClipboardJS: 'clipboard'

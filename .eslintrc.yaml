@@ -7,6 +7,5 @@
     Rails: readonly
     StripeCheckout: readonly
     Turbolinks: readonly
-    Typed: readonly
   rules:
     no-extra-bind: "off"
