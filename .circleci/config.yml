@@ -258,11 +258,11 @@ workflows:
           requires:
             - bundle_dependencies
             - yarn_dependencies
-      - system_tests:
-          requires:
-            - bundle_dependencies
-            - yarn_dependencies
-            - asset_dependencies
+      # - system_tests:
+      #     requires:
+      #       - bundle_dependencies
+      #       - yarn_dependencies
+      #       - asset_dependencies
       - unit_tests:
           requires:
               - bundle_dependencies
