@@ -89,7 +89,7 @@
 
 .dashboard-grid-wrapper {
   display: grid;
-  grid-gap: 14px;
+  grid-gap: 10px 20px;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 }
 
@@ -99,4 +99,8 @@
     display: block;
     width: 100%;
   }
+}
+
+.bg-dark-ad {
+  background-color: rgb(29, 29, 29);
 }

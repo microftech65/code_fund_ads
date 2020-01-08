@@ -57,6 +57,7 @@ class PropertiesController < ApplicationController
 
     respond_to do |format|
       if @property.save
+        CreateNewPropertyNotificationJob.perform_later @property
         format.html { redirect_to @property, notice: "Property was successfully created." }
         format.json { render :show, status: :created, location: @property }
       else
@@ -113,7 +114,7 @@ class PropertiesController < ApplicationController
     @assignable_fallback_campaigns = if authorized_user.can_admin_system?
       Campaign.active.fallback
     else
-      current_user.campaigns.active.fallback
+      Current.organization&.campaigns&.active&.fallback
     end
   end
 

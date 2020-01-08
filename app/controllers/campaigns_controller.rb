@@ -9,14 +9,10 @@ class CampaignsController < ApplicationController
   before_action :set_campaign, only: [:show, :edit, :update, :destroy]
 
   def index
-    campaigns = scope_list(Campaign).order(order_by).includes(:user, :creative, :organization)
-
-    if authorized_user.can_admin_system?
-      campaigns = campaigns.where(user: @user) if @user
-    else
-      campaigns = campaigns.where(user: current_user)
-    end
-
+    campaigns = scope_list(Campaign)
+      .order(order_by)
+      .includes(:user, :creative, :organization)
+      .where(organization: Current.organization)
     max = (campaigns.count / Pagy::VARS[:items].to_f).ceil
     @pagy, @campaigns = pagy(campaigns, page: current_page(max: max))
 
@@ -105,7 +101,7 @@ class CampaignsController < ApplicationController
     @campaign = if authorized_user.can_admin_system?
       Campaign.find(params[:id])
     else
-      current_user.campaigns.find(params[:id])
+      Current.organization&.campaigns&.find(params[:id])
     end
   end
 

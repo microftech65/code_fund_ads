@@ -6,17 +6,6 @@ Rails.application.routes.draw do
     get code, controller: :errors, action: :error, code: code
   end
 
-  scope module: "buttercms" do
-    get "/categories/:slug" => "categories#show", :as => :buttercms_category
-    get "/author/:slug" => "authors#show", :as => :buttercms_author
-
-    get "/blog/rss" => "feeds#rss", :format => "rss", :as => :buttercms_blog_rss
-    get "/blog/atom" => "feeds#atom", :format => "atom", :as => :buttercms_blog_atom
-    get "/blog/sitemap.xml" => "feeds#sitemap", :format => "xml", :as => :buttercms_blog_sitemap
-
-    get "/blog(/page/:page)" => "posts#index", :defaults => {page: 1}, :as => :buttercms_blog
-    get "/blog/:slug" => "posts#show", :as => :buttercms_post
-  end
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
 
   authenticate :user, lambda { |user| AuthorizedUser.new(user || User.new).can_admin_system? } do
@@ -56,13 +45,14 @@ Rails.application.routes.draw do
   resources :organizations
   scope "/organization/:organization_id/" do
     resources :organization_transactions, path: "/transactions"
-    resources :users, path: "/members", as: :organization_users
+    resources :organization_users, path: "/members", as: :organization_users
     resources :comments, only: [:index], as: :organization_comments
     resources :events, only: [:index], as: :organization_events
     resources :versions, only: [:index], as: :organization_versions, path: "/revisions"
     resources :organization_reports, except: [:edit], as: :organization_reports, path: "/reports"
     resources :scheduled_organization_reports, only: [:create, :destroy], as: :scheduled_organization_reports, path: "/scheduled_reports"
   end
+  resource :organization_invites, only: [:create]
 
   scope "/jobs", manage_scope: true do
     resources :job_postings, only: [:index, :edit, :update, :destroy], path: "/manage", as: :manage_job_postings
@@ -155,10 +145,7 @@ Rails.application.routes.draw do
   end
   get "/stop_user_impersonation", to: "impersonations#destroy", as: :stop_user_impersonation
 
-  resource :newsletter_subscription, only: [:create]
-  resources :advertisers, only: [:index]
-  resources :publishers, only: [:index]
-
+  resource :demo, only: [:show, :update]
   resources :advertisement_previews, param: :campaign_id, only: [:index, :show], path: "ad-previews"
   # NOTE: this is non restful and bad practice (don't do this)
   #       this route is passable for now since it's an admin only page supporting an edge case

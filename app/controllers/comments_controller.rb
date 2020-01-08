@@ -38,18 +38,14 @@ class CommentsController < ApplicationController
   end
 
   def set_organization
-    @commentable = if authorized_user.can_admin_system?
-      Organization.find(params[:organization_id])
-    else
-      current_user.organization
-    end
+    @commentable = Current.organization
   end
 
   def set_campaign
     @commentable = if authorized_user.can_admin_system?
       Campaign.find(params[:campaign_id])
     else
-      current_user.campaigns.find(params[:campaign_id])
+      Current.organization&.campaigns&.find(params[:campaign_id])
     end
   end
 

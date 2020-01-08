@@ -11,16 +11,14 @@ class UsersController < ApplicationController
 
   def index
     users = scope_list(User).includes(:avatar_attachment, :organization).include_image_count.order(order_by)
-    users = users.where(organization: @organization) if @organization
 
     max = (users.size / Pagy::VARS[:items].to_f).ceil
     @pagy, @users = pagy(users, page: current_page(max: max))
-
-    render "/users/for_organization/index" if @organization
   end
 
   def new
     @user = User.new
+    @user.organization_users.build
   end
 
   def create
@@ -28,6 +26,7 @@ class UsersController < ApplicationController
 
     respond_to do |format|
       if @user.save
+        CheckConsolidatedScreeningListJob.perform_later @user
         format.html do
           return redirect_to(params[:redir]) if params[:redir].present?
           redirect_to success_url, notice: "User was successfully created."
@@ -43,9 +42,14 @@ class UsersController < ApplicationController
     end
   end
 
+  def edit
+    @user.organization_users.build(role: "") unless @user.organization_users.exists?
+  end
+
   def update
     respond_to do |format|
       if @user.update(user_params)
+        CheckConsolidatedScreeningListJob.perform_later @user
         format.html { redirect_to @user, notice: "User was successfully updated." }
         format.json { render :show, status: :ok, location: @user }
       else
@@ -74,7 +78,7 @@ class UsersController < ApplicationController
   end
 
   def set_organization
-    @organization = Organization.find(params[:organization_id])
+    @organization ||= Current.organization
   end
 
   def user_params
@@ -98,10 +102,10 @@ class UsersController < ApplicationController
       :us_resident,
       :website_url,
       skills: [],
+      organization_users_attributes: [:organization_id, :role],
     ).tap do |whitelisted|
       if authorized_user.can_admin_system?
         whitelisted[:api_access] = params[:user][:api_access]
-        whitelisted[:organization_id] = params[:user][:organization_id]
         whitelisted[:roles] = params[:user][:roles]
         whitelisted[:status] = params[:user][:status]
       end

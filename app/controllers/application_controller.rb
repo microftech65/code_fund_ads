@@ -2,6 +2,7 @@ class ApplicationController < ActionController::Base
   include Pagy::Backend
   include Authorizable
   include Dateable
+  include Organization::Currentable
 
   delegate :instrument, to: ActiveSupport::Notifications
 
@@ -13,19 +14,13 @@ class ApplicationController < ActionController::Base
   before_action :sample_requests_for_scout
   before_action :set_ngrok_urls, if: -> { Rails.env.development? }
   before_action :allow_cors_requests, unless: -> { Rails.env.production? }
+  before_action :current_organization
 
   impersonates :user
 
-  if ENV["REDESIGN"] == "false"
-    prepend_view_path Rails.root.join("app/views_old").to_s
-
-    layout -> {
-      filepath = Rails.root.join("app/views_old", controller_name, "#{partial_name(action_name)}.html.erb")
-      File.exist?(filepath) ? "application_old" : "application"
-    }
-  end
-
   protected
+
+  helper_method :current_organization
 
   def store_ids
     return if is_a?(Untrackable)
@@ -90,7 +85,7 @@ class ApplicationController < ActionController::Base
       ],
       manifest: {href: "/site.webmanifest"},
       alternate: [
-        {href: "https://app.codefund.io/blog/rss", type: "application/rss+xml", title: "RSS"},
+        {href: "#{ENV["WORDPRESS_URL"]}/blog/feed", type: "application/rss+xml", title: "RSS"},
       ],
       "apple-mobile-web-app-title": "CodeFund",
       "application-name": "CodeFund",
@@ -136,11 +131,6 @@ class ApplicationController < ActionController::Base
     users_path
   end
 
-  def current_organization
-    current_user&.organization
-  end
-  helper_method :current_organization
-
   def reload_extensions
     load Rails.root.join("app/lib/extensions.rb")
   end
@@ -179,19 +169,6 @@ class ApplicationController < ActionController::Base
       Rails.application.config.action_mailer.asset_host = url
       Rails.application.routes.default_url_options = default_url_options
       Rails.application.config.action_mailer.default_url_options = default_url_options
-    end
-  end
-
-  private
-
-  def partial_name(action_name)
-    case action_name
-    when "update"
-      "edit"
-    when "create"
-      "new"
-    else
-      action_name
     end
   end
 end

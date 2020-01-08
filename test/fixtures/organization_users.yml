@@ -1,0 +1,32 @@
+# == Schema Information
+#
+# Table name: organization_users
+#
+#  id              :bigint           not null, primary key
+#  role            :string           default("member"), not null
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  organization_id :bigint           not null
+#  user_id         :bigint           not null
+#
+# Indexes
+#
+#  index_organization_users_on_organization_id  (organization_id)
+#  index_organization_users_on_uniqueness       (organization_id,user_id,role) UNIQUE
+#  index_organization_users_on_user_id          (user_id)
+#
+
+owner:
+  organization: default
+  user: advertiser
+  role: owner
+
+member:
+  organization: default
+  user: publisher
+  role: member
+
+administrator:
+  organization: default
+  user: administrator
+  role: administrator

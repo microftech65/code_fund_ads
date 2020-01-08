@@ -1,7 +1,7 @@
 class AdvertisementPreviewsController < ApplicationController
   layout false
   protect_from_forgery unless: -> { request.format.js? }
-  before_action :authenticate_user!
+  before_action :authenticate_user!, unless: -> { demo? }
   before_action :authenticate_administrator!, only: [:index]
   before_action :set_cors_headers
   before_action :set_campaign, only: [:show]
@@ -19,8 +19,9 @@ class AdvertisementPreviewsController < ApplicationController
     return render("/advertisement_previews/show") if request.format.html?
 
     # 2. Second it renders the JavaScript to preview the ad
-    @campaign ||= current_user.campaigns.build(
+    @campaign ||= Current&.organization&.campaigns&.build(
       id: 0,
+      user: current_user,
       name: "Unsaved Preview Campaign",
       creative: @creative,
       creative_ids: [@creative.id]
@@ -58,12 +59,16 @@ class AdvertisementPreviewsController < ApplicationController
 
   private
 
+  def demo?
+    Rails.application.routes.recognize_path(request.referrer)[:controller].inquiry.demos? && params[:campaign_id] == ENV["CAMPAIGN_DEMO_ID"]
+  end
+
   def set_campaign
     return nil if params[:campaign_id] == "0"
-    @campaign = if authorized_user.can_admin_system?
+    @campaign = if authorized_user.can_admin_system? || demo?
       Campaign.find params[:campaign_id]
     else
-      current_user.campaigns.find params[:campaign_id]
+      Current.organization&.campaigns&.find params[:campaign_id]
     end
   end
 
@@ -73,7 +78,7 @@ class AdvertisementPreviewsController < ApplicationController
     @creative = if authorized_user.can_admin_system?
       Creative.find params[:creative_id]
     else
-      current_user.creatives.find params[:creative_id]
+      Current.organization&.creatives&.find params[:creative_id]
     end
   end
 end
