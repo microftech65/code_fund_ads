@@ -337,6 +337,7 @@ GEM
       tty-color (~> 0.5)
     perm (1.0.2)
     pg (1.1.4)
+    pg_lock (0.2.1)
     premailer (1.11.1)
       addressable
       css_parser (>= 1.6.0)
@@ -520,7 +521,7 @@ GEM
       rubocop (~> 0.77.0)
       rubocop-performance (~> 1.5.1)
     statsd-ruby (1.4.0)
-    stimulus_reflex (2.1.6)
+    stimulus_reflex (2.1.7)
       cable_ready (>= 4.0)
       nokogiri
       rack
@@ -662,6 +663,7 @@ DEPENDENCIES
   paper_trail (~> 10.3.0)
   perm (~> 1.0.2)
   pg (>= 0.18, < 2.0)
+  pg_lock (~> 0.2.1)
   premailer (= 1.11.1)
   premailer-rails (= 1.10.3)
   pretender (~> 0.3.3)
@@ -693,7 +695,7 @@ DEPENDENCIES
   spreadsheet (~> 1.2.4)
   staccato (~> 0.5.1)
   standard
-  stimulus_reflex (~> 2.1.6)
+  stimulus_reflex (~> 2.1.7)
   stopwords-filter (~> 0.4.1)
   stripe (~> 5.4.1)
   tag_columns (~> 0.1.8)
