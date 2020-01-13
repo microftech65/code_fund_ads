@@ -52,6 +52,7 @@ class InsertionOrder < ApplicationRecord
   # validations ...............................................................
   validate :validate_dates, on: [:create]
   validate :validate_budget, on: [:create, :update]
+  validate :validate_campaigns
 
   # callbacks .................................................................
   # scopes ....................................................................
@@ -85,9 +86,7 @@ class InsertionOrder < ApplicationRecord
   end
 
   def allocated_budget
-    allocated = campaigns_total_budget
-    return budget if allocated > budget
-    allocated
+    campaigns_total_budget
   end
 
   def campaigns_total_budget
@@ -126,5 +125,9 @@ class InsertionOrder < ApplicationRecord
   def validate_budget
     return if budget_allocated?
     errors[:budget] << "is not allocated properly"
+  end
+
+  def validate_campaigns
+    errors[:base] << "Campaigns have errors" if campaigns.map(&:invalid?).include?(true)
   end
 end

@@ -92,6 +92,7 @@ class Campaign < ApplicationRecord
   validate :validate_creatives
   validate :validate_assigned_properties, if: :sponsor?
   validate :validate_url
+  validate :validate_estimate
 
   # callbacks .................................................................
   before_validation :assign_keywords
@@ -473,6 +474,11 @@ class Campaign < ApplicationRecord
     URI.parse(url)
   rescue
     errors[:url] << "is invalid"
+  end
+
+  def validate_estimate
+    return unless insertion_order.present?
+    errors[:estimate] << "is invalid" unless estimate.valid?
   end
 
   def validate_creatives

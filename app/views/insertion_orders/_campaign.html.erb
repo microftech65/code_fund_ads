@@ -11,7 +11,7 @@
           impressions at <%= tag.code campaign.estimate.ecpm.format %> eCPM
           for a total of <%= tag.code campaign.estimate.adjusted_budget.format %>
           <div>
-            <small class="text-muted">Usable Budget: <%= campaign.estimate.adjusted_budget.format no_cents: true %></small>
+            <small class="text-muted">Usable Budget: <%= campaign.estimate.adjusted_budget.format %></small>
             <small class="text-muted opacity-30 mx-1">|</small>
             <small class="text-muted">Target Daily Spend: <%= campaign.estimate.target_daily_spend.format %></small>
             <small class="text-muted opacity-30 mx-1">|</small>
@@ -30,11 +30,11 @@
       </div>
       <ul class="list-group list-group-flush">
         <li class="list-group-item pb-0">
-          <div class="form-group">
+          <%= tag.div class: "form-group", data: {invalid: campaign.errors[:budget].present? ? true : nil} do %>
             <label>Budget (USD)</label>
             <%= number_field_tag :total_budget, campaign.total_budget, id: "total_budget-#{campaign.temporary_id}", autofocus: true, required: true, label: "Budget (USD)", class: "form-control",
               data: {temporary_id: campaign.temporary_id, reflex: "debounced-input->InsertionOrdersReflex#set_campaign_budget"} %>
-          </div>
+          <% end %>
 
           <div class="form-group ml-2">
             <label>Audience</label>

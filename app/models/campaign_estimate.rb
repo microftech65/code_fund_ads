@@ -1,13 +1,20 @@
 class CampaignEstimate
   include ActiveModel::Model
+  include ActiveModel::Validations
 
   attr_accessor :campaign
   delegate :start_date, :end_date, :total_budget, :audience, :region, to: :campaign
   alias budget total_budget
 
+  validate :validate_budget
+
   # The adjusted budget for this estimate.
   def adjusted_budget
     [budget, estimated_impressions_value].min
+  end
+
+  def budget_discrepancy?
+    budget != adjusted_budget
   end
 
   # The eCPM for this estimate. i.e. cost per thousand impressions
@@ -161,5 +168,11 @@ class CampaignEstimate
 
   def to_stacked_bar_chart_series
     dates.map { |date| impressions_on date }
+  end
+
+  private
+
+  def validate_budget
+    errors[:budget] << "has a discrepancy" if budget_discrepancy?
   end
 end
