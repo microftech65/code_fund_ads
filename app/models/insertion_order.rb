@@ -67,12 +67,10 @@ class InsertionOrder < ApplicationRecord
   # public instance methods ...................................................
 
   def build_campaign
-    audience = Audience.blockchain
-    region = Region.united_states_and_canada
     campaigns.build(
       temporary_id: campaigns.size,
-      audience: audience,
-      region: region,
+      audience: Audience.blockchain,
+      region: Region.americas_northern,
       start_date: start_date,
       end_date: end_date,
     )

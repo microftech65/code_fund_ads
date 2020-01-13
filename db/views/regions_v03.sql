@@ -41,7 +41,7 @@ union all
 
 select
 3 "id",
-'Americas - Northern' "name",
+'Americas - Northern',
 'USD', 500, -- blockchain
 'USD', 500, -- css_and_design
 'USD', 500, -- dev_ops
@@ -101,7 +101,7 @@ union all
 
 select
 7 "id",
-'Australia and New Zealand' "name",
+'Australia and New Zealand',
 'USD', 500, -- blockchain
 'USD', 500, -- css_and_design
 'USD', 500, -- dev_ops
