@@ -36,15 +36,6 @@ export default class extends ApplicationController {
     this.spinnerTarget.classList.remove('fa-spin')
   }
 
-  // TODO: we may throw this away... unsure if we like it yet
-  styleInvalidFields () {
-    this.element
-      .querySelectorAll('[data-invalid]')
-      .forEach(el =>
-        el.querySelectorAll('input').forEach(e => e.classList.add('is-invalid'))
-      )
-  }
-
   // callbacks ....
 
   beforeSetBudget () {
@@ -84,6 +75,5 @@ export default class extends ApplicationController {
   afterReflex (element) {
     this.removeAllChartPermanents()
     this.hideActivity()
-    this.styleInvalidFields()
   }
 }

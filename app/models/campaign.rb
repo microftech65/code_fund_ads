@@ -81,7 +81,7 @@ class Campaign < ApplicationRecord
   # relationships .............................................................
   belongs_to :audience, optional: true
   belongs_to :region, optional: true
-  belongs_to :creative, -> { includes :creative_images }
+  belongs_to :creative, -> { includes :creative_images }, optional: true
   belongs_to :insertion_order, optional: true
   belongs_to :user
   has_one :job_posting

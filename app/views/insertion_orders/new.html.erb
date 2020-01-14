@@ -1,5 +1,3 @@
-<%# render "/insertion_orders/campaign" %>
-
 <div class="container" data-controller="insertion-orders">
   <h1>
     Insertion Order Form
@@ -8,6 +6,10 @@
   <hr />
 
   <div class="row">
+    <div class="col-12">
+      <%= render "/insertion_orders/errors", record: @insertion_order %>
+    </div>
+
     <div class="col-3">
       <div class="form-group">
         <label>Budget (USD)</label>

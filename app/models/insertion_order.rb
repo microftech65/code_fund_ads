@@ -52,7 +52,6 @@ class InsertionOrder < ApplicationRecord
   # validations ...............................................................
   validate :validate_dates, on: [:create]
   validate :validate_budget, on: [:create, :update]
-  validate :validate_campaigns
 
   # callbacks .................................................................
   # scopes ....................................................................
@@ -70,11 +69,21 @@ class InsertionOrder < ApplicationRecord
   def build_campaign
     campaigns.build(
       temporary_id: campaigns.size,
+      name: generate_campaign_name,
+      user: user,
       audience: Audience.blockchain,
       region: Region.americas_northern,
       start_date: start_date,
       end_date: end_date,
+      status: ENUMS::CAMPAIGN_STATUSES::PENDING,
     )
+  end
+
+  def generate_campaign_name
+    [
+      Current&.organization&.name,
+      "#{start_date&.to_s("yyyymmdd")}-#{end_date&.to_s("yyyymmdd")}",
+    ].compact.join " - "
   end
 
   def to_stashable_attributes
@@ -125,9 +134,5 @@ class InsertionOrder < ApplicationRecord
   def validate_budget
     return if budget_allocated?
     errors[:budget] << "is not allocated properly"
-  end
-
-  def validate_campaigns
-    errors[:base] << "Campaigns have errors" if campaigns.map(&:invalid?).include?(true)
   end
 end

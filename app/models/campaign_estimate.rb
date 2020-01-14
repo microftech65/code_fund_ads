@@ -3,7 +3,7 @@ class CampaignEstimate
   include ActiveModel::Validations
 
   attr_accessor :campaign
-  delegate :start_date, :end_date, :total_budget, :audience, :region, to: :campaign
+  delegate :start_date, :end_date, :total_budget, :insertion_order, :audience, :region, to: :campaign
   alias budget total_budget
 
   validate :validate_budget
@@ -174,5 +174,6 @@ class CampaignEstimate
 
   def validate_budget
     errors[:budget] << "has a discrepancy" if budget_discrepancy?
+    errors[:budget] << "exceeds the insertion order budget" if budget > insertion_order.budget
   end
 end
