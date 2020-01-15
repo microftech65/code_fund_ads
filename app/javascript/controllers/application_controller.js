@@ -22,6 +22,5 @@ export default class extends Controller {
 
   afterReflex () {
     document.getElementById('reflex-status').classList.add('d-none')
-    setFocus()
   }
 }

@@ -66,10 +66,25 @@ class InsertionOrder < ApplicationRecord
 
   # public instance methods ...................................................
 
+  def name
+    "#{organization&.name} - #{start_date.try :to_s, "mm/dd/yyyy"} - #{end_date.try :to_s, "mm/dd/yyyy"}"
+  end
+
+  def date_range
+    return nil unless start_date && end_date
+    "#{start_date.to_s "mm/dd/yyyy"} #{end_date.to_s "mm/dd/yyyy"}"
+  end
+
+  def date_range=(value)
+    dates = value.split(" - ")
+    self.start_date = Date.strptime(dates[0], "%m/%d/%Y")
+    self.end_date = Date.strptime(dates[1], "%m/%d/%Y")
+  end
+
   def build_campaign
     campaigns.build(
       temporary_id: campaigns.size,
-      name: generate_campaign_name,
+      name: "#{campaigns.size + 1}: #{name}",
       user: user,
       audience: Audience.blockchain,
       region: Region.americas_northern,
@@ -77,13 +92,6 @@ class InsertionOrder < ApplicationRecord
       end_date: end_date,
       status: ENUMS::CAMPAIGN_STATUSES::PENDING,
     )
-  end
-
-  def generate_campaign_name
-    [
-      Current&.organization&.name,
-      "#{start_date&.to_s("yyyymmdd")}-#{end_date&.to_s("yyyymmdd")}",
-    ].compact.join " - "
   end
 
   def to_stashable_attributes
