@@ -1,0 +1,251 @@
+
+microftech65/code_fund_ads
+
+forked from gitcoinco/code_fund_adsCodeFund is an open source platform that helps fund maintainers, bloggers, and builders through non-tracking ethical ads https://codefund.io
+
+AGPL-3.0 License
+
+RubyHTMLJavaScriptTSQLCSSShell
+
+Commit time.circleciAd demo page (gitcoinco#963)GitHub update issue templates and add PR template (gitcoinco#807)
+appfix user relationship on organization model (gitcoinco#1008) Update to use METABASE
+docs/diagramsUpdate advertiser kit, add Organization images (gitcoinco#975)
+
+
+Retrieved:
+CodeFund Ads
+
+CodeFund Ads is an ethical and discreet ad platform that funds open-source. It helps your favorite projects thrive by paying maintainers the majority of all generated revenue.
+
+Publishing & JavaScript  CodeFund script Code Fund div. <div id="codefund"></div> <script src="https://codefund.app/properties/PROPERTY_ID/funder.js" async="async" type="text/javascript"></script>
+
+Optional Query String Parameters
+
+template - the template to use overrides the property config
+
+theme - the theme to use overrides the property config
+
+keywords - the keywords to use for targeting (comma delimited string) overrides the property config
+
+Setting async on the script tag will ensure that CodeFund doens't block anything on the publisher's site.
+
+Embed Callbacks
+
+You may want to perform a function if the embed function does not return an ad.
+
+To do this, you must create an event listener for the window event codefund.
+
+Demo:
+
+window.addEventListener("codefund", function(evt) { if (evt.detail.status !== 'ok') { // Do something else console.log(evt.detail.status); } });
+
+On a successful embed, evt.detail will return:
+
+{ "status": "ok", "house": false } or { "status": "ok", "house": true } // Ad returned is a house ad
+
+If an error occurs with embedding the ad, evt.detail will return:
+
+{ "status": "error", "message": "error message" }
+
+And in the event that we do not have an available advertiser, you will see:
+
+{ "status": "no-advertiser" }
+
+API
+
+The API is documented with Blueprint and is hosted on Apiary.
+
+NOTE: Apairy doesn't fully adhere to the Blueprint 1A9 specification. Our Blueprint file may deviate from the spec to satisfy Apiary limitations.
+
+https://github.com/gitcoinco/code_fund_ads/blob/master/BLUEPRINT.md
+
+Ad Rendering and Impression/Click Tracking
+
+The URLs/routes responsible for ad rendering are:
+
+GET /properties/1/funder.js → advertisements#show - embed script
+
+This is the embed JavaScript that publishers place on their site. It includes the ad HTML and some logic to inject the HTML to the page and setup the links and impression pixel.
+
+GET /scripts/76bfe997-898a-418c-8f0b-6298b7dd320a/embed.js → advertisements#show - embed script
+
+This endpoint is to support our legacy system (CodeFund v1) embed URLs. It points to the same endpoint as /properties/1/funder.js.
+
+GET /display/76bfe997-898a-418c-8f0b-6298b7dd320a.gif → impressions#show - creates an impression
+
+This is the impression pixel image. The impression is created after this image is requested and served successfully. This means that a matching campaign was found and the embed JavaScript did its job correctly.
+
+GET /impressions/76bfe997-898a-418c-8f0b-6298b7dd320a/click?campaign_id=1 → advertisement_clicks#show - creates a click
+
+This is the proxy/redirect URL that allows us to track the click. We immediately redirect to the advertiser's campaign URL and background the work to mark the associated impression as clicked.
+
+Enums
+
+All enum values are managed as constants defined in config/enums.yml This file is converted to Ruby constants at runtime.
+
+Introspect what enums are defined via the cli.
+
+ENUMS.constants ENUMS::USER_ROLES.constants # etc...
+
+Always use enums instead of "magic" values.
+
+Development Environment
+
+Prerequisites
+
+Ruby version 2.6.5
+
+rbenv
+
+asdf
+
+NodeJS version 13.0.1
+
+nvm
+
+asdf
+
+Bundler version 2.1.1
+
+gem install bundler
+
+Yarn
+
+Mac: instructions
+
+Ubuntu: instructions
+
+graphviz
+
+Mac: brew install graphviz
+
+Ubuntu: sudo apt-get install graphviz
+
+PostgreSQL 11
+
+Mac: instructions
+
+Ubuntu: instructions
+
+Redis
+
+Mac: brew install redis && brew services start redis
+
+Ubuntu: instructions
+
+You must create a (superuser) role with the name of your OS user in your postgres configuration in order to run db operations (e.g. testing and development).
+
+git clone https://github.com/gitcoinco/code_fund_ads.git cd /path/to/project # setup environment variables cp .env-example .env # If you need a password for your postgres role, uncomment "#export PGPASSWORD='<password>' in the .env file and replace <password> with the role's password # install dependencies bundle install yarn install # db setup + tests rails db:create db:migrate rails test # start app and navigate to http://localhost:3000 rails s
+
+It is recommended to develop with Rails cache enabled. This application relies heavily on caching and may not work properly without the cache enabled.
+
+bundle exec rails dev:cache # => Development mode is now being cached.
+
+Database Seeds
+
+The impressions table will seed with approximately 100k records spread over 12 months by default. You can increase this by setting the IMPRESSIONS environment variable and seeding again.
+
+IMPRESSIONS=10_000_000 rails db:seed 
+
+Tmux/Teamocil or Mert
+
+You may want to create a teamocil/tmux config for your machine.
+
+SEE: https://github.com/gitcoinco/code_fund_ads/blob/master/.teamocil-example.yml
+
+cd /path/to/project ./bin/teamocil
+
+Alternatively, you may want to create a mert config for your machine to be used with iTerm.
+
+SEE: https://github.com/gitcoinco/code_fund_ads/blob/master/.mert-example.yml
+
+cd /path/to/project ./bin/mert
+
+Code Standards
+
+We avoid bike shedding by enforcing coding standards through tooling.
+
+Ruby - standard
+
+JavaScript - prettier-standard
+
+Ensure the code has been standardized by running the following before you commit.
+
+./bin/standardize
+
+Deployment
+
+All pushes of master to Github result in a deployment to the staging environment. We use Herou build pipelines to promote the deployment to environments like production.
+
+./bin/heroku_promote 
+
+Preboot
+
+The application is configured for zero downtime deployments using Heroku's preboot feature.
+
+This means that 2 versions of the application will be running simultaneously during deploys. All code changes should consider this deployment requirement to ensure that both versions of the app are valid and can run in parallel.
+
+If breaking changes are unavoidable, disable preboot prior to deployment.
+
+./bin/heroku_preboot_disable ./bin/heroku_promote ./bin/heroku_preboot_enable
+
+Scheduler
+
+There are several tasks that should be scheduled to run at different intervals. We manage this with Heroku Scheduler.
+
+rails schedule:counter_updates - hourly
+
+rails schedule:update_campaign_statuses - daily
+
+Database
+
+The impressions table is dynamically partitioned by advertiser (i.e. user) and date
+
+The database user requires permissions to execute DDL and create schema to support dynamic partition tables
+
+Maxmind
+
+This product includes GeoLite data created by MaxMind, available from: http://www.maxmind.com
+
+The GeoLite2-City.tar.gz is checked into this repo at db/maxmind/GeoLite2-City.tar.gz
+
+A fresh copy of the GeoLite2-City.tar.gz file can be obtained by running one of the following commands.
+
+rails maxmind:download
+
+DownloadAndExtractMaxmindFileJob.new.download
+
+Instrumentation
+
+CodeFund uses a self-hosted version of count.ly to gather and analyze data. This data does not include any personal identifiable information.
+
+The pattern in which to instrument CodeFund with is as follows:
+
+CodeFundAds::Events.track(:action, :device_id, :segmentation) 
+
+Each variable can be the following value:
+
+action - the label for the action being tracked (e.g. find_virtual_impression)
+
+device_id - the session or unique ID of the visit
+
+segmentation - hash of key value pairs that can be used to segment the data
+
+The segmentation typically includes:
+
+status - the status of the action (e.g. success or fail)
+
+ip_address - the IP address of the visitor
+
+property_id - the Property ID
+
+campaign_id - the Campaign ID
+
+creative_id - the Creative ID
+
+country_code - the country code
+
+Demo:
+
+# Application & Environment are added by default CodeFundAds::Events.track("Find Virtual Impression", session.id, { status: "fail", ip_address: "127.0.0.1" }) CodeFundAds::Events.track("Find Fallback Campaign", session.id, { status: "success", ip_address: "127.0.0.1", property_id: 1, country_code: "US" })
+
